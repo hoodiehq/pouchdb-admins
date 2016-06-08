@@ -78,25 +78,3 @@ test('db.admins({secret: "secret123"})', function (t) {
 
   .catch(t.error)
 })
-
-
-var internals = module.exports.internals = {}
-internals.hashPassword = require('../../lib/utils/hash-password')
-
-var simple = require('simple-mock')
-
-test('set.js', function (t) {
-  t.plan(1)
-
-  simple.mock(internals, 'hashPassword').callbackWith(new Error('error'))
-
-  PouchDB.plugin(plugin)
-  var db = new PouchDB('foo')
-  var admins = db.admins({secret: 'secret123'})
-  var results = admins.set('kim', 'secret')
-
-  t.deepEqual(admins.set('kim', 'secret'),results,'reject promise in set.js when hashPassword encounters error')
-
-  simple.restore()
-  t.end()
-})
