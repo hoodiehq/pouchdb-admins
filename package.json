@@ -32,7 +32,7 @@
   "homepage": "https://github.com/hoodiehq/pouchdb-admins#readme",
   "dependencies": {
     "base64url": "^1.0.5",
-    "couchdb-calculate-session-id": "^1.0.0",
+    "couchdb-calculate-session-id": "^1.1.0",
     "lie": "^3.0.1",
     "lodash": "^4.8.2",
     "pouchdb-bulkdocs-wrapper": "^1.0.2",
