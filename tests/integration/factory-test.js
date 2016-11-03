@@ -1,6 +1,5 @@
-var PouchDB = require('pouchdb').defaults({
-  db: require('memdown')
-})
+var PouchDB = require('pouchdb-core')
+  .plugin(require('pouchdb-adapter-memory'))
 var test = require('tape')
 
 var plugin = require('../../index')
