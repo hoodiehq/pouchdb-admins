@@ -1,16 +1,21 @@
 var PouchDB = require('pouchdb-core')
   .plugin(require('pouchdb-adapter-memory'))
 var test = require('tape')
+var Promise = require('lie')
+var format = require('util').format
+var hashPassword = require('../../lib/utils/hash-password')
+var generateSalt = require('../../lib/utils/generate-salt')
 
 var plugin = require('../../index')
 
 test('db.admins({secret: "secret123"})', function (t) {
-  t.plan(20)
+  t.plan(22)
 
   PouchDB.plugin(plugin)
   var db = new PouchDB('foo')
   t.is(typeof db.admins, 'function', 'db.admins is a function')
 
+  var preinitializedAdmins
   var admins = db.admins({secret: 'secret123'})
   t.is(typeof admins.get, 'function', 'admins.get is a function')
   t.is(typeof admins.set, 'function', 'admins.set is a function')
@@ -77,4 +82,43 @@ test('db.admins({secret: "secret123"})', function (t) {
   })
 
   .catch(t.error)
+
+  .then(function () {
+    return new Promise(function (resolve, reject) {
+      var salt = generateSalt()
+      hashPassword('mysecret', salt, 10, function (error, hash) {
+        if (error) {
+          return reject(error)
+        }
+
+        return resolve(format(
+          '-%s-%s,%s,%s',
+          'pbkdf2',
+          hash,
+          salt,
+          10
+        ))
+      })
+    })
+  })
+  .then(function (userEntry) {
+    preinitializedAdmins = db.admins({secret: 'secretXYZ', admins: {'foo': userEntry}})
+    return preinitializedAdmins.get('foo');
+  })
+  .catch(function () {
+    t.fail("Password should be successfully hashed")
+  })
+  .then(function (doc) {
+    t.ok(doc, "fetching preinitialized admins works")
+    return preinitializedAdmins.validatePassword('foo', 'mysecret')
+  })
+  .catch(function (error) {
+    t.fail(error, "trying to retrieve a preinitialized admin should not error")
+  })
+  .then(function () {
+    t.is(arguments[0], undefined, 'validating password of preinitialized admin resolves without argument')
+  })
+  .catch(function () {
+    t.fail("trying to validate the password of a preinitialized admin should not error")
+  })
 })
