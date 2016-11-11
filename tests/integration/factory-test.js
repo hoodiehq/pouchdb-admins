@@ -84,29 +84,13 @@ test('db.admins({secret: "secret123"})', function (t) {
   .catch(t.error)
 
   .then(function () {
-    return new Promise(function (resolve, reject) {
-      var salt = generateSalt()
-      hashPassword('mysecret', salt, 10, function (error, hash) {
-        if (error) {
-          return reject(error)
-        }
-
-        return resolve(format(
-          '-%s-%s,%s,%s',
-          'pbkdf2',
-          hash,
-          salt,
-          10
-        ))
-      })
+    preinitializedAdmins = db.admins({
+      secret: 'secretXYZ',
+      admins: {
+        'foo': '-pbkdf2-209defc26fef24bbbf578735c7dcacdf34c36624,10a1d01b11f617c1e219316d12913313419117b1cd1f6110,10'
+      }
     })
-  })
-  .then(function (userEntry) {
-    preinitializedAdmins = db.admins({secret: 'secretXYZ', admins: {'foo': userEntry}})
     return preinitializedAdmins.get('foo');
-  })
-  .catch(function () {
-    t.fail("Password should be successfully hashed")
   })
   .then(function (doc) {
     t.ok(doc, "fetching preinitialized admins works")
