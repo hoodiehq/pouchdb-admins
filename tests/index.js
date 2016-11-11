@@ -1,4 +1,6 @@
 require('./unit/set-test')
 require('./unit/validate-password-test')
+require('./unit/validate-session-test')
 require('./unit/utils/admin-hash-to-doc-test')
+require('./unit/utils/hash-password-test')
 require('./integration/factory-test')
