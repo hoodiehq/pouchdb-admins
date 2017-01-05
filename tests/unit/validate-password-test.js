@@ -20,7 +20,7 @@ test('validate-password', function (group) {
       salt: 'im-salty'
     })
     var error = new Error('pbkdf2 error')
-    pbkdf2Stub.callbackAtIndex(4, error)
+    pbkdf2Stub.callbackAtIndex(5, error)
 
     validatePassword()
       .then(function () {

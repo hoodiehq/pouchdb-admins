@@ -16,7 +16,7 @@ test('hash-password', function (group) {
     t.plan(3)
 
     var error = new Error('pbkdf2 error')
-    pbkdf2Stub.callbackAtIndex(4, error)
+    pbkdf2Stub.callbackAtIndex(5, error)
 
     t.doesNotThrow(function () {
       hashPassword('password', 'salt', 10, callbackStub)
